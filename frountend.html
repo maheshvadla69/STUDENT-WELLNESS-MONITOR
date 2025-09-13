@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Student Wellness Monitor</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;600&family=Montserrat:wght@500;700&display=swap" rel="stylesheet" />
+  <style>
+    /* Reset and base */
+    * {
+      box-sizing: border-box;
+    }
+    body, html {
+      margin: 0; padding: 0;
+      min-height: 100vh;
+      font-family: 'Raleway', Arial, sans-serif;
+      background: url("https://images.unsplash.com/photo-1494526585095-c41746248156?auto=format&fit=crop&w=1920&q=80") no-repeat center center fixed;
+      background-size: cover;
+      color: white;
+      position: relative;
+    }
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      background: rgba(0, 0, 0, 0.6);
+      z-index: -1;
+      pointer-events: none;
+    }
+    .container {
+      max-width: 480px;
+      margin: 12vh auto 6vh;
+      text-align: center;
+      padding: 0 1.25rem;
+    }
+    h1 {
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 700;
+      font-size: 3rem;
+      margin-bottom: 0.15em;
+      text-shadow: 0 5px 25px rgba(0,0,0,0.8);
+    }
+    p {
+      font-size: 1.18rem;
+      color: #ddd;
+      margin-bottom: 3rem;
+    }
+
+    /* Open modal button */
+    .btn-open-modal {
+      display: inline-block;
+      cursor: pointer;
+      padding: 14px 56px;
+      background: linear-gradient(270deg, #ff416c, #ff4b2b);
+      background-size: 400% 400%;
+      border-radius: 40px;
+      color: white;
+      font-weight: 700;
+      font-size: 1.25rem;
+      box-shadow: 0 0 28px #ff4b2baa;
+      transition: transform 0.25s ease, box-shadow 0.3s ease;
+      animation: gradientShift 8s ease infinite;
+      user-select: none;
+      text-decoration: none;
+      border: none;
+      outline: none;
+    }
+    .btn-open-modal:hover,
+    .btn-open-modal:focus {
+      background-position: 100% 50%;
+      box-shadow: 0 0 48px #ff416ccc;
+      transform: scale(1.1);
+      outline: none;
+    }
+    @keyframes gradientShift {
+      0%, 100%{background-position: 0% 50%;}
+      50%{background-position: 100% 50%;}
+    }
+
+    /* Modal */
+    #modal {
+      visibility: hidden;
+      opacity: 0;
+      pointer-events: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      background: rgba(0,0,0,0.78);
+      backdrop-filter: blur(8px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: opacity 0.3s ease;
+      z-index: 100;
+      padding: 1rem;
+    }
+    #modal:target {
+      visibility: visible;
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .modal-content {
+      background: #232435dd;
+      border-radius: 16px;
+      width: 100%;
+      max-width: 480px;
+      padding: 32px 28px 40px;
+      box-shadow: 0 0 32px 5px #7a30a3cc;
+      text-align: center;
+      font-family: 'Raleway', sans-serif;
+      color: #e0e0f0;
+      position: relative;
+      user-select: none;
+    }
+    .close-btn {
+      position: absolute;
+      top: 18px;
+      right: 18px;
+      font-size: 30px;
+      font-weight: bold;
+      color: #bbb;
+      text-decoration: none;
+      user-select: none;
+      transition: color 0.2s ease;
+    }
+    .close-btn:hover,
+    .close-btn:focus {
+      color: #fff;
+      outline: none;
+      cursor: pointer;
+    }
+
+    label[for="mood-textarea"] {
+      display: block;
+      text-align: left;
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-bottom: 6px;
+      user-select: none;
+    }
+    textarea#mood-textarea {
+      width: 100%;
+      min-height: 110px;
+      border: none;
+      border-radius: 14px;
+      padding: 16px;
+      font-size: 1rem;
+      font-family: 'Raleway', sans-serif;
+      background: #2c2d4b;
+      color: #e0e0f0;
+      resize: vertical;
+      margin-bottom: 24px;
+      outline: none;
+      transition: box-shadow 0.2s ease;
+    }
+    textarea#mood-textarea:focus {
+      box-shadow: 0 0 14px 3px #7a30a3cc;
+    }
+
+    /* Submit button - no action functionality, visually attractive */
+    label[for="submit"] {
+      display: block;
+      margin: 0 auto;
+      width: fit-content;
+      padding: 14px 52px;
+      font-weight: 700;
+      font-size: 1.2rem;
+      color: white;
+      border-radius: 50px;
+      background: linear-gradient(90deg, #6772e5, #22d3ee);
+      box-shadow: 0 0 20px rgba(34, 211, 238, 0.6);
+      cursor: pointer;
+      text-align: center;
+      user-select: none;
+      transition: background 0.3s ease, box-shadow 0.3s ease, transform 0.25s ease;
+    }
+    label[for="submit"]:hover,
+    label[for="submit"]:focus {
+      background: linear-gradient(90deg, #22d3ee, #6772e5);
+      box-shadow: 0 0 36px 6px #22d3eecc;
+      transform: scale(1.05);
+      outline: none;
+    }
+
+    /* Feedback text box */
+    #feedback {
+      margin: 3rem auto 0;
+      max-width: 480px;
+      font-weight: 700;
+      font-size: 1.4rem;
+      text-align: center;
+      font-family: 'Montserrat', sans-serif;
+      min-height: 48px;
+      color: #eeefff;
+      /* cannot dynamically update with CSS only */
+    }
+
+    /* Gradient animated text */
+    .colored-text {
+      background: linear-gradient(90deg, #f7971e, #ffd200, #21d4fd, #b721ff 91%);
+      background-size: 300% 100%;
+      background-position: 0 0;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      color: transparent;
+      animation: shinyText 5s linear infinite;
+      padding: 0 5px;
+      display: inline-block;
+    }
+    @keyframes shinyText {
+      0% { background-position: 0% 0%; }
+      100% { background-position: 100% 0%; }
+    }
+
+    @media (max-width: 600px) {
+      h1 {
+        font-size: 2.1rem;
+      }
+      p {
+        font-size: 1rem;
+      }
+      label[for="mood-textarea"],
+      label[for="submit"] {
+        font-size: 1rem;
+        padding: 12px 40px;
+      }
+      textarea#mood-textarea {
+        font-size: 0.9rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="container">
+    <h1>🌸 Student Wellness Monitor 🌸</h1>
+    <p>Your daily safe space to share how you feel.</p>
+
+    <!-- Button to open modal -->
+    <a href="#modal" class="btn-open-modal" role="button" aria-haspopup="dialog" aria-controls="modal-content" aria-expanded="false">✨ Check In ✨</a>
+
+    <!-- Feedback placeholder -->
+    <div id="feedback" aria-live="polite" aria-atomic="true"></div>
+  </main>
+
+  <!-- Modal with :target -->
+  <section id="modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title" aria-describedby="modal-desc">
+    <div class="modal-content" id="modal-content">
+      <a href="#" class="close-btn" aria-label="Close modal">&times;</a>
+      <h2 id="modal-title" style="margin-top:0; font-family: 'Montserrat', sans-serif;">How are you feeling today?</h2>
+      <form>
+        <label for="mood-textarea">Your thoughts</label>
+        <textarea id="mood-textarea" name="mood-textarea" placeholder="Write your thoughts here..."></textarea>
+        <label for="submit" role="button" tabindex="0" aria-pressed="false" id="submit">Submit</label>
+      </form>
+    </div>
+  </section>
+</body>
+</html>
